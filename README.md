@@ -15,7 +15,7 @@ Required Dependencies:
 
 To use:
 <ol>
-  <li> Download all files </li>
+  <li> Download all files in src</li>
   <li> Change filepath in config.py to your own output folder (the directory used here will act as a root directory)  </li>
   <li> Run the downloader by: <code> python downloader.py </code> </li>
   <li> The program may ask for authentication for the first time, key in your NUSNET ID and password. </li>
