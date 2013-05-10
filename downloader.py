@@ -11,16 +11,17 @@ def login():
 	payload = {}
 	payload['__VIEWSTATE'] = config.viewstate
 
-	userid = raw_input('User ID: ')
-	payload['userid'] = userid
-
 	while True:
+		userid = raw_input('User ID: ')
+		payload['userid'] = userid
 		password = getpass.getpass()
 		payload['password'] = password
+		
 		url = config.formhost + config.APIKey
 		response = requests.post(url, data = payload, allow_redirects = True)
+		
 		if len(response.text) != 416:
-			print "Wrong password, please try again!"
+			print "Wrong username or password, please try again!"
 		else:
 			print "Login success"
 			auth.validate(response.text)
