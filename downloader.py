@@ -5,6 +5,7 @@ import auth
 import json
 import modules
 import workbin
+import os
 
 def login():
 	payload = {}
@@ -25,16 +26,19 @@ def login():
 			auth.validate(response.text)
 			break
 
-try:
-	json_data = open('auth.json')
-	data = json.load(json_data)
-	token = data['Token']
-	if auth.validate(token) == True:
-		print "No login required"
-	else:
-		print "Noooooooooooooooo"
+currdir = os.getcwd()
+authdir = os.path.join(currdir, "auth.json")
 
-	modules = modules.getModuleIDs(token)
-	workbin.getFiles(modules, token)
-except:
-	login()
+while True:
+	if os.path.exists(authdir):
+		with open(authdir) as fi:
+			data = json.load(fi)
+			token = data['Token']
+			if auth.validate(token) == False:
+				login()
+
+		modules = modules.getModules(token)
+		workbin.getFiles(modules, token)
+		break
+	else:
+		login()
