@@ -27,15 +27,15 @@ def makedir(path):
 
 # given a folder, download files contained, and traverse subfolders recursively
 def traverseFolder(folder, path, token):
-        files = folder['Files']
-        for eachfile in files:
-            downloadFile(eachfile, path, token)
+    files = folder['Files']
+    for eachfile in files:
+        downloadFile(eachfile, path, token)
 
-        subfolders = folder['Folders']
-        for subfolder in subfolders:
-            subpath = os.path.join(path, subfolder['FolderName'])
-            makedir(subpath)
-            traverseFolder(subfolder, subpath, token)
+    subfolders = folder['Folders']
+    for subfolder in subfolders:
+        subpath = os.path.join(path, subfolder['FolderName'])
+        makedir(subpath)
+        traverseFolder(subfolder, subpath, token)
 
 
 # given a workbin, create subdirs for its folders, and traverse each folder
@@ -53,10 +53,15 @@ def getFiles(modules, token):
 
     for module in modules:
         name = module['CourseCode']
+        name = name.replace('/', '-')
+        if name in config.exclude:
+            print "Skipping module " + name + "...\n"
+            continue
+
         path = os.path.join(config.filepath, name)
         makedir(path)
 
-        print "Downloading for module " + name + "...",
+        print "Downloading for module " + name + "..."
 
         payload['CourseID'] = module['ID']
         response = requests.get(url, params=payload)
@@ -65,6 +70,8 @@ def getFiles(modules, token):
 
         # list the workbins of each module
         workbins = data['Results']
+        print str(len(workbins)) + " workbin(s) found"
+
         if len(workbins) > 1:  # if there are more than one workbin, create a folder for each workbin
             for wbin in workbins:
                 wbinpath = os.path.join(path, wbin['Title'])
@@ -74,4 +81,4 @@ def getFiles(modules, token):
             for wbin in workbins:
                 traverseWorkBin(wbin, path, token)
 
-        print "done"
+        print ""
