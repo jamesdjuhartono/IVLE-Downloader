@@ -1,6 +1,7 @@
 import requests
 import os
 import config
+import re
 
 
 # given a file, download it to the specified path
@@ -33,7 +34,8 @@ def traverseFolder(folder, path, token):
 
     subfolders = folder['Folders']
     for subfolder in subfolders:
-        subpath = os.path.join(path, subfolder['FolderName'])
+        folderName = re.sub(r'\\|/|\*|"|\?|:|\||<|>', "-", subfolder['FolderName'])
+        subpath = os.path.join(path, folderName)
         makedir(subpath)
         traverseFolder(subfolder, subpath, token)
 
@@ -42,7 +44,8 @@ def traverseFolder(folder, path, token):
 def traverseWorkBin(wbin, path, token):
     folders = wbin['Folders']
     for folder in folders:
-        fpath = os.path.join(path, folder['FolderName'])
+        folderName = re.sub(r'\\|/|\*|"|\?|:|\||<|>', "-", folder['FolderName'])
+        fpath = os.path.join(path, folderName)
         makedir(fpath)
         traverseFolder(folder, fpath, token)
 
@@ -52,8 +55,8 @@ def getFiles(modules, token):
     payload = {'APIKey': config.APIKey, 'AuthToken': token, 'Duration': '0', 'TitleOnly': 'false'}
 
     for module in modules:
-        name = module['CourseCode']
-        name = name.replace('/', '-')
+        name = re.sub(r'\\|/|\*|"|\?|:|\||<|>', "-", module['CourseCode'])
+
         if name in config.exclude:
             print "Skipping module " + name + "...\n"
             continue
